@@ -1,0 +1,29 @@
+---
+- name: Install nginx
+  hosts: app_hosts
+  become: true
+
+  tasks:
+  - name: Add repo for CentOS
+    when: ansible_distribution == "CentOS"
+    # Doent't work O_o  
+    #yum_repository:
+    #   name: Docker
+    #   description: Docker CentOS repos
+    #   baseurl: https://download.docker.com/linux/centos/
+    #   file: docker-ce
+    #   state: absent
+    get_url:
+      url: https://download.docker.com/linux/centos/docker-ce.repo
+      dest: /etc/yum.repos.d/docker-ce.repo
+
+  - name: Install packets
+    package:
+      name: "{{ item }}"
+      state: absent
+      update_cache: yes
+    loop:
+      - nginx
+      - docker-ce
+      - docker-compose
+      - git
